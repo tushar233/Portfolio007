@@ -1,0 +1,742 @@
+@import "tailwindcss";
+
+/* ============================================================
+   PRIMITIVE TOKENS
+   Raw values — never referenced directly in components.
+   ============================================================ */
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+}
+
+/* ============================================================
+   DARK THEME — :root  (default)
+   ============================================================ */
+:root {
+  color-scheme: dark;
+
+  /* ── Page surfaces ── */
+  --bg-page:          #080b14;
+  --bg-surface:       #0e1120;
+  --bg-elevated:      #151828;
+  --bg-elevated-2:    #1c2035;
+  --bg-overlay:       rgba(5, 7, 14, 0.94);
+  --bg-input:         rgba(21, 24, 40, 0.85);
+  --bg-input-hover:   rgba(28, 32, 53, 0.92);
+
+  /* ── Text ── */
+  --text-primary:     #eceff8;
+  --text-secondary:   #97a0b8;
+  --text-tertiary:    #68708a;
+  --text-muted:       #4a5168;
+  --text-inverse:     #080b14;
+  --text-on-brand:    #ffffff;
+
+  /* ── Borders ── */
+  --border-subtle:    rgba(255, 255, 255, 0.055);
+  --border-default:   rgba(255, 255, 255, 0.09);
+  --border-strong:    rgba(255, 255, 255, 0.16);
+  --border-focus:     #3b82f6;
+
+  /* ── Brand ── */
+  --brand-primary:          #3b82f6;
+  --brand-secondary:        #06b6d4;
+  --brand-purple:           #8b5cf6;
+  --brand-emerald:          #10b981;
+  --brand-amber:            #f59e0b;
+  --brand-pink:             #ec4899;
+  --brand-danger:           #ef4444;
+  --brand-primary-tint:     rgba(59, 130, 246, 0.09);
+  --brand-primary-border:   rgba(59, 130, 246, 0.22);
+  --brand-secondary-tint:   rgba(6, 182, 212, 0.09);
+  --brand-purple-tint:      rgba(139, 92, 246, 0.09);
+  --brand-emerald-tint:     rgba(16, 185, 129, 0.09);
+  --brand-amber-tint:       rgba(245, 158, 11, 0.09);
+  --brand-pink-tint:        rgba(236, 72, 153, 0.09);
+  --brand-danger-tint:      rgba(239, 68, 68, 0.08);
+
+  /* ── Interactive ── */
+  --interactive-default:  rgba(255, 255, 255, 0.035);
+  --interactive-hover:    rgba(255, 255, 255, 0.07);
+  --interactive-active:   rgba(255, 255, 255, 0.11);
+
+  /* ── Gradients ── */
+  --gradient-brand:       linear-gradient(135deg, #3b82f6, #06b6d4);
+  --gradient-brand-wide:  linear-gradient(135deg, #3b82f6, #06b6d4, #8b5cf6);
+  --gradient-hero-glow:   radial-gradient(ellipse 70% 55% at 18% 30%, rgba(59,130,246,0.10) 0%, transparent 65%);
+  --gradient-cta-surface: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04), rgba(139,92,246,0.05));
+
+  /* ── Shadows ── */
+  --shadow-xs:       0 1px 2px rgba(0,0,0,0.35);
+  --shadow-sm:       0 1px 4px rgba(0,0,0,0.40), 0 1px 2px rgba(0,0,0,0.30);
+  --shadow-md:       0 4px 14px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.30);
+  --shadow-lg:       0 8px 30px rgba(0,0,0,0.50), 0 4px 12px rgba(0,0,0,0.30);
+  --shadow-xl:       0 16px 52px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.30);
+  --shadow-brand:    0 4px 20px rgba(59, 130, 246, 0.24);
+  --shadow-brand-lg: 0 8px 32px rgba(59, 130, 246, 0.30);
+  --glow-brand:      0 0 20px rgba(59, 130, 246, 0.28);
+  --glow-subtle:     0 0 12px rgba(59, 130, 246, 0.14);
+
+  /* ── Cards ── */
+  --card-bg:     var(--bg-surface);
+  --card-border: var(--border-subtle);
+  --card-shadow: var(--shadow-sm);
+  --card-radius: 1rem;
+
+  /* ── Nav ── */
+  --nav-bg:      rgba(8, 11, 20, 0.88);
+  --nav-border:  rgba(255, 255, 255, 0.07);
+
+  /* ── Scrollbar ── */
+  --scrollbar-track: #080b14;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.09);
+  --scrollbar-hover: rgba(255, 255, 255, 0.18);
+
+  /* ── Selection ── */
+  --selection-bg:   rgba(59, 130, 246, 0.28);
+  --selection-text: #eceff8;
+
+  /* ── Timeline ── */
+  --timeline-line:       rgba(59, 130, 246, 0.18);
+  --timeline-dot:        #3b82f6;
+  --timeline-dot-border: #080b14;
+
+  /* ── Orbit visualization ── */
+  --orbit-node-fill:    #0c0f1e;
+  --orbit-ring-primary: rgba(59, 130, 246, 0.16);
+  --orbit-ring-outer:   rgba(139, 92, 246, 0.12);
+  --orbit-hub-from:     #162042;
+  --orbit-hub-to:       #080b14;
+  --orbit-glow:         rgba(59, 130, 246, 0.15);
+
+  /* ── Canvas particles ── */
+  --particle-color:              59, 130, 246;
+  --particle-opacity-max:        0.32;
+  --particle-connection-opacity: 0.055;
+
+  /* ── Section accent ── */
+  --section-alt-bg: rgba(255,255,255,0.018);
+}
+
+/* ============================================================
+   LIGHT THEME — [data-theme="light"]
+   Premium warm off-white / architectural neutral.
+   NOT a white background. Intentionally layered warmth.
+   ============================================================ */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* ── Page surfaces — warm ivory/linen layers ──
+     Each level is slightly cooler/whiter than the page,
+     creating subtle elevation without flat monotone.    */
+  --bg-page:          #f7f5f1;   /* warm ivory — the canvas */
+  --bg-surface:       #fdfcfb;   /* near-white with warmth — card face */
+  --bg-elevated:      #f2f0ec;   /* slightly recessed — inner panels */
+  --bg-elevated-2:    #eceae5;   /* deeper panel / code blocks */
+  --bg-overlay:       rgba(247, 245, 241, 0.96);
+  --bg-input:         #ffffff;
+  --bg-input-hover:   #fdfcfb;
+
+  /* ── Text — warm deep tones ── */
+  --text-primary:     #1a1612;   /* warm near-black */
+  --text-secondary:   #3c3830;   /* warm dark brown-gray */
+  --text-tertiary:    #6b6358;   /* warm medium */
+  --text-muted:       #9c9488;   /* warm muted */
+  --text-inverse:     #f7f5f1;
+  --text-on-brand:    #ffffff;
+
+  /* ── Borders — warm dark alpha ── */
+  --border-subtle:    rgba(26, 22, 18, 0.06);
+  --border-default:   rgba(26, 22, 18, 0.10);
+  --border-strong:    rgba(26, 22, 18, 0.18);
+  --border-focus:     #2563eb;
+
+  /* ── Brand — deepened for warm-light readability ── */
+  --brand-primary:          #1d4ed8;
+  --brand-secondary:        #0369a1;
+  --brand-purple:           #6d28d9;
+  --brand-emerald:          #047857;
+  --brand-amber:            #b45309;
+  --brand-pink:             #be185d;
+  --brand-danger:           #b91c1c;
+  --brand-primary-tint:     rgba(29, 78, 216, 0.07);
+  --brand-primary-border:   rgba(29, 78, 216, 0.18);
+  --brand-secondary-tint:   rgba(3, 105, 161, 0.07);
+  --brand-purple-tint:      rgba(109, 40, 217, 0.07);
+  --brand-emerald-tint:     rgba(4, 120, 87, 0.07);
+  --brand-amber-tint:       rgba(180, 83, 9, 0.07);
+  --brand-pink-tint:        rgba(190, 24, 93, 0.07);
+  --brand-danger-tint:      rgba(185, 28, 28, 0.07);
+
+  /* ── Interactive ── */
+  --interactive-default:  rgba(26, 22, 18, 0.035);
+  --interactive-hover:    rgba(26, 22, 18, 0.065);
+  --interactive-active:   rgba(26, 22, 18, 0.10);
+
+  /* ── Gradients — warm direction ── */
+  --gradient-brand:        linear-gradient(135deg, #1d4ed8, #0369a1);
+  --gradient-brand-wide:   linear-gradient(135deg, #1d4ed8, #0369a1, #6d28d9);
+  --gradient-hero-glow:    radial-gradient(ellipse 70% 55% at 18% 30%, rgba(29,78,216,0.05) 0%, transparent 65%);
+  --gradient-cta-surface:  linear-gradient(135deg, rgba(29,78,216,0.05), rgba(3,105,161,0.03), rgba(109,40,217,0.04));
+
+  /* ── Shadows — visible, warm-tinted ── */
+  --shadow-xs:       0 1px 2px rgba(26,22,18,0.06);
+  --shadow-sm:       0 1px 4px rgba(26,22,18,0.08), 0 1px 2px rgba(26,22,18,0.04);
+  --shadow-md:       0 4px 14px rgba(26,22,18,0.10), 0 2px 6px rgba(26,22,18,0.06);
+  --shadow-lg:       0 8px 28px rgba(26,22,18,0.11), 0 4px 12px rgba(26,22,18,0.07);
+  --shadow-xl:       0 16px 48px rgba(26,22,18,0.13), 0 6px 18px rgba(26,22,18,0.08);
+  --shadow-brand:    0 4px 16px rgba(29, 78, 216, 0.16);
+  --shadow-brand-lg: 0 8px 28px rgba(29, 78, 216, 0.20);
+  --glow-brand:      0 0 16px rgba(29, 78, 216, 0.16);
+  --glow-subtle:     0 0 10px rgba(29, 78, 216, 0.09);
+
+  /* ── Cards ── */
+  --card-bg:     var(--bg-surface);
+  --card-border: var(--border-subtle);
+  --card-shadow: var(--shadow-sm);
+  --card-radius: 1rem;
+
+  /* ── Nav ── */
+  --nav-bg:     rgba(247, 245, 241, 0.92);
+  --nav-border: rgba(26, 22, 18, 0.08);
+
+  /* ── Scrollbar ── */
+  --scrollbar-track: #f7f5f1;
+  --scrollbar-thumb: rgba(26, 22, 18, 0.11);
+  --scrollbar-hover: rgba(26, 22, 18, 0.22);
+
+  /* ── Selection ── */
+  --selection-bg:   rgba(29, 78, 216, 0.16);
+  --selection-text: #1a1612;
+
+  /* ── Timeline ── */
+  --timeline-line:       rgba(29, 78, 216, 0.15);
+  --timeline-dot:        #1d4ed8;
+  --timeline-dot-border: #f7f5f1;
+
+  /* ── Orbit ── */
+  --orbit-node-fill:    #f0ede8;
+  --orbit-ring-primary: rgba(29, 78, 216, 0.13);
+  --orbit-ring-outer:   rgba(109, 40, 217, 0.10);
+  --orbit-hub-from:     #dde4f5;
+  --orbit-hub-to:       #c8d2ee;
+  --orbit-glow:         rgba(29, 78, 216, 0.10);
+
+  /* ── Canvas particles ── */
+  --particle-color:              29, 78, 216;
+  --particle-opacity-max:        0.22;
+  --particle-connection-opacity: 0.035;
+
+  /* ── Section accent ── */
+  --section-alt-bg: rgba(26,22,18,0.018);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  background-color: var(--bg-page);
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  line-height: 1.65;
+  /* Smooth, brief theme crossfade */
+  transition: background-color 0.22s ease, color 0.22s ease;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-page);
+  transition: background-color 0.22s ease;
+}
+
+img, video, svg { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================
+   THEME TRANSITION CLASSES
+   Applied to surfaces that benefit from a smooth crossfade.
+   Keep the list tight — avoid animating everything.
+   ============================================================ */
+.card, .card-elevated, .card-surface,
+header, footer,
+.input-field,
+.btn-primary, .btn-ghost, .btn-secondary {
+  transition:
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    color 0.22s ease;
+}
+
+/* ============================================================
+   LAYOUT — Container
+   ============================================================ */
+.portfolio-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+@media (min-width: 480px)  { .portfolio-container { padding-left: 1.75rem;  padding-right: 1.75rem; } }
+@media (min-width: 768px)  { .portfolio-container { padding-left: 2.5rem;   padding-right: 2.5rem; } }
+@media (min-width: 1024px) { .portfolio-container { padding-left: 3rem;     padding-right: 3rem; } }
+@media (min-width: 1280px) { .portfolio-container { padding-left: 3.5rem;   padding-right: 3.5rem; } }
+@supports (padding: max(0px)) {
+  .portfolio-container {
+    padding-left:  max(1.25rem, env(safe-area-inset-left));
+    padding-right: max(1.25rem, env(safe-area-inset-right));
+  }
+  @media (min-width: 768px) {
+    .portfolio-container {
+      padding-left:  max(2.5rem, env(safe-area-inset-left));
+      padding-right: max(2.5rem, env(safe-area-inset-right));
+    }
+  }
+}
+
+/* ============================================================
+   PAGE STRUCTURE
+   ============================================================ */
+.page-top {
+  padding-top: 2.5rem;
+}
+@media (min-width: 768px)  { .page-top { padding-top: 3rem; } }
+@media (min-width: 1024px) { .page-top { padding-top: 3.5rem; } }
+
+/* Inter-section rhythm */
+.sections-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  /* Bottom padding so last section has breathing room before footer */
+  padding-bottom: 5rem;
+}
+@media (min-width: 768px)  { .sections-gap { gap: 6.5rem; padding-bottom: 6rem; } }
+@media (min-width: 1024px) { .sections-gap { gap: 8rem;   padding-bottom: 7rem; } }
+
+/* ============================================================
+   TYPOGRAPHY SCALE
+   Fluid via clamp(). Art-directed for hierarchy, not just size.
+   ============================================================ */
+
+/* Display — hero headline only */
+.text-display {
+  font-size: clamp(2.875rem, 7vw, 5.25rem);
+  font-weight: 900;
+  line-height: 1.00;
+  letter-spacing: -0.042em;
+}
+
+/* H1 — page titles */
+.text-h1 {
+  font-size: clamp(2.25rem, 4.8vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.032em;
+}
+
+/* H2 — section titles */
+.text-h2 {
+  font-size: clamp(1.625rem, 3.2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.024em;
+}
+
+/* H3 — sub-headings, card titles */
+.text-h3 {
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.26;
+  letter-spacing: -0.018em;
+}
+
+/* H4 — small card headings */
+.text-h4 {
+  font-size: clamp(1rem, 1.7vw, 1.125rem);
+  font-weight: 700;
+  line-height: 1.38;
+  letter-spacing: -0.010em;
+}
+
+/* Body sizes */
+.text-body-lg {
+  font-size: clamp(1.0625rem, 1.9vw, 1.1875rem);
+  line-height: 1.78;
+}
+.text-body {
+  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+  line-height: 1.74;
+}
+.text-body-sm {
+  font-size: 0.9375rem;
+  line-height: 1.70;
+}
+.text-caption {
+  font-size: 0.875rem;
+  line-height: 1.60;
+}
+.text-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.text-mono {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+/* ============================================================
+   SECTION STRUCTURE HELPERS
+   ============================================================ */
+.section-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin-bottom: 0.875rem;
+  color: var(--brand-primary);
+}
+
+.section-heading-block {
+  margin-bottom: 2.5rem;
+}
+.section-heading-block .section-label {
+  margin-bottom: 0.5rem;
+}
+.section-heading-block .text-h2 {
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  font-size: clamp(1rem, 1.6vw, 1.125rem);
+  color: var(--text-secondary);
+  line-height: 1.78;
+  max-width: 580px;
+}
+
+/* ============================================================
+   BACKGROUND SYSTEM — Premium subtle depth
+   Light: warm ivory canvas with soft atmospheric gradients
+   Dark: deep navy with controlled ambient light
+   ============================================================ */
+
+/* Ambient page atmosphere — applied on the page background
+   using a layered pseudo-radial approach for depth.
+   No JavaScript, no layout impact.                        */
+.page-atmosphere {
+  position: relative;
+}
+.page-atmosphere::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* Subtle upper-left warmth */
+  background:
+    radial-gradient(ellipse 65% 45% at 5% 8%,   var(--atmo-primary)   0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 95% 15%,  var(--atmo-secondary) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 35% at 50% 98%,  var(--atmo-tertiary)  0%, transparent 50%);
+}
+
+:root {
+  --atmo-primary:   rgba(59, 130, 246, 0.055);
+  --atmo-secondary: rgba(139, 92, 246, 0.030);
+  --atmo-tertiary:  rgba(6, 182, 212, 0.025);
+}
+[data-theme="light"] {
+  --atmo-primary:   rgba(29, 78, 216, 0.032);
+  --atmo-secondary: rgba(180, 83, 9, 0.020);
+  --atmo-tertiary:  rgba(109, 40, 217, 0.018);
+}
+
+/* ============================================================
+   CARD SYSTEM
+   ============================================================ */
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+.card-elevated {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-md);
+}
+.card-surface {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.875rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================
+   BUTTON SYSTEM — Premium micro-interactions
+   ============================================================ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.75rem;
+  border-radius: 0.625rem;
+  background: var(--gradient-brand);
+  color: var(--text-on-brand);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-brand);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  min-height: 46px;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.15s ease;
+  border-radius: inherit;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-brand-lg); }
+.btn-primary:hover::after { background: rgba(255,255,255,0.06); }
+.btn-primary:active { transform: scale(0.98); box-shadow: var(--shadow-brand); }
+.btn-primary:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
+.btn-primary:disabled { opacity: 0.46; cursor: not-allowed; transform: none; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.75rem;
+  border-radius: 0.625rem;
+  background: var(--brand-primary-tint);
+  color: var(--brand-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--brand-primary-border);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+  min-height: 46px;
+}
+.btn-secondary:hover { background: rgba(59,130,246,0.13); transform: translateY(-1px); }
+.btn-secondary:active { transform: scale(0.98); }
+.btn-secondary:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
+[data-theme="light"] .btn-secondary:hover { background: rgba(29,78,216,0.11); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.75rem;
+  border-radius: 0.625rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  min-height: 46px;
+}
+.btn-ghost:hover { background: var(--interactive-hover); border-color: var(--border-strong); transform: translateY(-1px); }
+.btn-ghost:active { transform: scale(0.98); }
+.btn-ghost:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
+
+/* ============================================================
+   FORM SYSTEM
+   ============================================================ */
+.input-field {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  outline: none;
+  min-height: 50px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.22s ease;
+}
+.input-field::placeholder { color: var(--text-muted); }
+.input-field:hover { background: var(--bg-input-hover); }
+.input-field:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+[data-theme="light"] .input-field:focus {
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+}
+
+/* ============================================================
+   TECH CHIP — minimal, no border by default
+   ============================================================ */
+.tech-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.3rem;
+  background: var(--interactive-default);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  line-height: 1.6;
+  border: none;
+}
+
+/* ============================================================
+   GRADIENT TEXT
+   ============================================================ */
+.gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.gradient-text-wide {
+  background: var(--gradient-brand-wide);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ============================================================
+   TYPEWRITER
+   ============================================================ */
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--brand-primary);
+  margin-left: 3px;
+  vertical-align: text-bottom;
+  animation: cursor-blink 1s step-start infinite;
+  border-radius: 1px;
+}
+@keyframes cursor-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+/* ============================================================
+   FOCUS & ACCESSIBILITY
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.25rem;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: 0 0 0.75rem 0.75rem;
+  transition: top 0.18s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.skip-link:focus { top: 0; outline: 2px solid var(--text-on-brand); outline-offset: 2px; }
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+
+::selection { background: var(--selection-bg); color: var(--selection-text); }
+
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .typewriter-cursor { animation: none; opacity: 1; }
+  .page-atmosphere::before { display: none; }
+}
+
+/* ============================================================
+   AMBIENT BACKGROUND ANIMATION
+   Very slow, extremely subtle CSS keyframe movement.
+   GPU-composited (opacity + transform only).
+   Paused automatically by prefers-reduced-motion above.
+   ============================================================ */
+@keyframes atmo-drift-a {
+  0%   { opacity: 0.9; transform: translate(0, 0)   scale(1); }
+  50%  { opacity: 1.0; transform: translate(12px, 8px) scale(1.04); }
+  100% { opacity: 0.9; transform: translate(0, 0)   scale(1); }
+}
+@keyframes atmo-drift-b {
+  0%   { opacity: 0.8; transform: translate(0, 0)    scale(1); }
+  60%  { opacity: 1.0; transform: translate(-10px, 12px) scale(1.03); }
+  100% { opacity: 0.8; transform: translate(0, 0)    scale(1); }
+}
+
+/* ============================================================
+   ORBIT / VISUALIZATION ANIMATIONS
+   ============================================================ */
+@keyframes orbit-pulse {
+  0%,100% { opacity: 0.40; }
+  50%      { opacity: 0.80; }
+}
+@keyframes hub-breathe {
+  0%,100% { opacity: 0.90; }
+  50%      { opacity: 1.00; }
+}
