@@ -408,11 +408,9 @@ export default function HomeOverview({ setActiveTab }: HomeOverviewProps) {
                     className="mt-auto pt-3 border-t flex items-center justify-between gap-2"
                     style={{ borderColor: 'var(--border-subtle)' }}
                   >
-                    <div className="flex flex-wrap gap-1.5">
-                      {project.technologies.slice(0, 2).map((tech, ti) => (
-                        <span key={ti} className="tech-chip">{tech}</span>
-                      ))}
-                    </div>
+                    <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
+                      {project.technologies.slice(0, 2).join(' · ')}
+                    </p>
                     <span
                       className="text-[12px] font-medium flex items-center gap-1 shrink-0 group-hover:translate-x-0.5 transition-transform"
                       style={{ color: 'var(--brand-primary)' }}
@@ -452,7 +450,7 @@ export default function HomeOverview({ setActiveTab }: HomeOverviewProps) {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {certifications.map((cert, i) => (
             <motion.div
               key={i}
@@ -461,19 +459,10 @@ export default function HomeOverview({ setActiveTab }: HomeOverviewProps) {
               viewport={vp}
               variants={fadeInUp}
               transition={{ delay: i * 0.055 }}
-              className="card p-4 text-center cursor-default"
-              style={{ transition: 'border-color 0.2s ease, transform 0.2s ease' }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-strong)';
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = '';
-                (e.currentTarget as HTMLElement).style.transform = '';
-              }}
+              className="text-center cursor-default"
             >
               <div
-                className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-tr ${cert.badgeColor} flex items-center justify-center text-white mb-3 shadow-sm`}
+                className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-tr ${cert.badgeColor} flex items-center justify-center text-white mb-3`}
               >
                 <Sparkles size={14} aria-hidden="true" />
               </div>
@@ -484,7 +473,7 @@ export default function HomeOverview({ setActiveTab }: HomeOverviewProps) {
                 {cert.title}
               </div>
               <div
-                className="mt-1.5"
+                className="mt-1"
                 style={{
                   fontSize: '9px',
                   fontWeight: 700,

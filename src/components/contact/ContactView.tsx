@@ -179,7 +179,7 @@ export default function ContactView() {
             whileInView="visible"
             viewport={vp}
             variants={fadeInUp}
-            className="card rounded-2xl p-6 sm:p-8 space-y-6"
+            className="space-y-2"
           >
             <div>
               <h2 className="text-h3 mb-2" style={{ color: 'var(--text-primary)' }}>
@@ -191,117 +191,89 @@ export default function ContactView() {
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* Email */}
               <a
                 href="mailto:devtushar211@gmail.com"
-                className="flex items-center gap-4 p-3.5 rounded-xl border transition-all duration-200 group focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{
-                  backgroundColor: 'var(--interactive-default)',
-                  borderColor: 'var(--border-default)',
-                  outlineColor: 'var(--border-focus)',
-                }}
+                className="flex items-center gap-4 py-3 group focus-visible:outline-2 focus-visible:outline-offset-2 rounded-lg"
+                style={{ outlineColor: 'var(--border-focus)' }}
                 aria-label="Send email to devtushar211@gmail.com"
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--brand-primary-border)';
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-primary-tint)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-default)';
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--interactive-default)';
-                }}
               >
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                   style={{ backgroundColor: 'var(--brand-primary-tint)', color: 'var(--brand-primary)' }}
                 >
-                  <Mail size={18} aria-hidden="true" />
+                  <Mail size={16} aria-hidden="true" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-label" style={{ color: 'var(--text-muted)', fontSize: '10px' }}>Email</div>
-                  <div
-                    className="text-[14px] font-semibold truncate transition-colors duration-200"
+                  <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Email</p>
+                  <p
+                    className="text-[14px] font-semibold truncate transition-colors duration-150 group-hover:text-[var(--brand-primary)]"
                     style={{ color: 'var(--text-primary)' }}
                   >
                     devtushar211@gmail.com
-                  </div>
+                  </p>
                 </div>
               </a>
 
               {/* Phone */}
               <a
                 href="tel:+919116312426"
-                className="flex items-center gap-4 p-3.5 rounded-xl border transition-all duration-200 group focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{
-                  backgroundColor: 'var(--interactive-default)',
-                  borderColor: 'var(--border-default)',
-                  outlineColor: 'var(--border-focus)',
-                }}
+                className="flex items-center gap-4 py-3 group focus-visible:outline-2 focus-visible:outline-offset-2 rounded-lg"
+                style={{ outlineColor: 'var(--border-focus)' }}
                 aria-label="Call +91 9116312426"
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(6,182,212,0.25)';
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-secondary-tint)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-default)';
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--interactive-default)';
-                }}
               >
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                   style={{ backgroundColor: 'var(--brand-secondary-tint)', color: 'var(--brand-secondary)' }}
                 >
-                  <Phone size={18} aria-hidden="true" />
+                  <Phone size={16} aria-hidden="true" />
                 </div>
                 <div>
-                  <div className="text-label" style={{ color: 'var(--text-muted)', fontSize: '10px' }}>
-                    Phone / WhatsApp
-                  </div>
-                  <div className="text-[14px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Phone / WhatsApp</p>
+                  <p
+                    className="text-[14px] font-semibold transition-colors duration-150 group-hover:text-[var(--brand-secondary)]"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
                     +91 9116312426
-                  </div>
+                  </p>
                 </div>
               </a>
 
               {/* Location */}
-              <div
-                className="flex items-center gap-4 p-3.5 rounded-xl border"
-                style={{
-                  backgroundColor: 'var(--interactive-default)',
-                  borderColor: 'var(--border-default)',
-                }}
-              >
+              <div className="flex items-center gap-4 py-3">
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                   style={{ backgroundColor: 'var(--brand-purple-tint)', color: 'var(--brand-purple)' }}
                 >
-                  <MapPin size={18} aria-hidden="true" />
+                  <MapPin size={16} aria-hidden="true" />
                 </div>
                 <div>
-                  <div className="text-label" style={{ color: 'var(--text-muted)', fontSize: '10px' }}>Location</div>
-                  <div className="text-[14px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Location</p>
+                  <p className="text-[14px] font-semibold" style={{ color: 'var(--text-primary)' }}>
                     India · Remote &amp; Worldwide Consulting
-                  </div>
+                  </p>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Availability card */}
+          {/* Availability — plain, no card border */}
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={vp}
             variants={fadeInUp}
-            className="card rounded-2xl p-6 sm:p-7 space-y-4"
+            className="pt-6 border-t space-y-3"
+            style={{ borderTopColor: 'var(--border-subtle)' }}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <span
-                className="w-2 h-2 rounded-full animate-pulse shrink-0"
+                className="w-[7px] h-[7px] rounded-full animate-pulse shrink-0"
                 style={{ backgroundColor: 'var(--brand-emerald)' }}
                 aria-hidden="true"
               />
-              <h3 className="text-[15px] font-bold" style={{ color: 'var(--text-primary)' }}>
+              <h3 className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
                 Availability &amp; Response
               </h3>
             </div>
@@ -332,14 +304,18 @@ export default function ContactView() {
           </motion.div>
         </div>
 
-        {/* ── RIGHT: Contact form ── */}
+        {/* ── RIGHT: Contact form — elevated surface, no redundant border ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={vp}
           variants={fadeInUp}
-          className="card rounded-2xl p-7 sm:p-9 lg:p-10"
-          style={{ boxShadow: 'var(--shadow-lg)' }}
+          className="rounded-xl"
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            boxShadow: 'var(--shadow-md)',
+            padding: 'clamp(1.75rem, 3vw, 2.5rem)',
+          }}
         >
           {/* ── Success state ── */}
           {status === 'success' ? (
