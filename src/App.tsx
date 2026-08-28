@@ -64,7 +64,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, EBState> {
               padding: '0.75rem 1.5rem',
               borderRadius: '0.75rem',
               background: 'var(--gradient-brand)',
-              color: '#fff',
+              color: 'var(--text-on-brand)',
               fontWeight: 700,
               border: 'none',
               cursor: 'pointer',

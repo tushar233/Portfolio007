@@ -256,7 +256,7 @@ export default function ArchitectureView() {
                     className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-colors duration-200"
                     style={{
                       backgroundColor: isActive ? 'var(--brand-primary)' : 'transparent',
-                      color: isActive ? '#fff' : 'var(--text-muted)',
+                      color: isActive ? 'var(--text-on-brand)' : 'var(--text-muted)',
                     }}
                   >
                     <Icon size={15} aria-hidden="true" />
