@@ -1,9 +1,11 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   Briefcase, Workflow, Users, Link, Zap, Globe, Eye,
 } from 'lucide-react';
-import { experienceItems } from '../../data/expertise';
-import { fadeInUp, staggerContainer } from '../../hooks/useAnimations';
+import { experienceItems, type ExperienceItem } from '../../data/expertise';
+import { fadeInUp } from '../../hooks/useAnimations';
+import SectionReveal from '../ui/SectionReveal';
 
 const vp = { once: true, margin: '-50px' };
 
@@ -52,17 +54,65 @@ const impacts = [
   },
 ];
 
+function TimelineDateBadge({ year, isCurrent }: { year: string; isCurrent: boolean }) {
+  return (
+    <div className={`exp-date-badge${isCurrent ? ' exp-date-badge-current' : ''}`}>
+      {isCurrent && <span className="exp-date-pulse-ring" aria-hidden="true" />}
+      <span className="exp-date-text">{year}</span>
+    </div>
+  );
+}
+
+function TimelineContentCard({ item, isCurrent }: { item: ExperienceItem; isCurrent: boolean }) {
+  return (
+    <article className={`exp-timeline-card${isCurrent ? ' exp-timeline-card-current' : ''}`}>
+      {isCurrent && (
+        <div className="exp-current-label">
+          <span className="exp-current-dot" aria-hidden="true" />
+          <span>Current Role</span>
+        </div>
+      )}
+
+      <div className="exp-card-header">
+        <Briefcase size={16} className="exp-card-icon" aria-hidden="true" />
+        <div className="min-w-0">
+          <h3 className="exp-card-role">{item.role}</h3>
+          <p className="exp-card-company">
+            {item.company} · {item.duration}
+          </p>
+        </div>
+      </div>
+
+      <ul className="exp-card-list" aria-label="Key responsibilities">
+        {item.responsibilities.map((resp, idx) => (
+          <li key={idx} className="exp-card-list-item">
+            <span className="exp-card-bullet" aria-hidden="true">▹</span>
+            <span>{resp}</span>
+          </li>
+        ))}
+      </ul>
+
+      {item.technologies.length > 0 && (
+        <p className="exp-card-tech meta-inline">
+          {item.technologies.join(' · ')}
+        </p>
+      )}
+    </article>
+  );
+}
+
 export default function ExperienceView() {
+  const timelineRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ['start 85%', 'end 25%'],
+  });
+  const spineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
   return (
     <div className="page-top sections-gap">
 
-      {/* ── HEADER ── */}
-      <motion.header
-        initial="hidden"
-        animate="visible"
-        variants={fadeInUp}
-        className="max-w-3xl"
-      >
+      <SectionReveal as="header" animation="fadeDown" className="page-section-header">
         <span className="section-label">Career Timeline &amp; Leadership</span>
         <h1 className="text-h1 mt-2 mb-4" style={{ color: 'var(--text-primary)' }}>
           7+ Years of Engineering Evolution
@@ -71,204 +121,89 @@ export default function ExperienceView() {
           A track record of progressive technical leadership, delivering enterprise multi-cloud
           platforms from initial discovery through enterprise production go-live.
         </p>
-      </motion.header>
+      </SectionReveal>
 
-      {/* ══════════════════════════════════════════
-          CAREER TIMELINE
-          No outer card wrapper — timeline lives on the page canvas.
-          Individual entries remain as meaningful cards.
-      ══════════════════════════════════════════ */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={vp}
-        variants={fadeInUp}
+      <section
+        ref={timelineRef}
         aria-label="Career Timeline"
+        className="page-section exp-timeline-section"
       >
-        <div className="section-heading-block">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={vp}
+          variants={fadeInUp}
+          className="section-heading-block"
+        >
           <span className="section-label" style={{ color: 'var(--brand-secondary)' }}>
             Professional Journey
           </span>
           <h2 className="text-h2 mt-1" style={{ color: 'var(--text-primary)' }}>
             Experience &amp; Growth Timeline
           </h2>
-        </div>
+        </motion.div>
 
-        <div className="relative max-w-3xl mx-auto">
+        <div className="exp-timeline relative w-full">
 
-          {/* Vertical line */}
-          <div
-            className="absolute left-5 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-px pointer-events-none"
-            style={{
-              background: `linear-gradient(to bottom, transparent, var(--timeline-line) 12%, var(--timeline-line) 88%, transparent)`,
-            }}
+          <svg
+            className="exp-timeline-spine exp-timeline-spine-desktop"
             aria-hidden="true"
-          />
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id="expSpineGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--brand-primary)" />
+                <stop offset="100%" stopColor="var(--brand-secondary)" />
+              </linearGradient>
+            </defs>
+            <line x1="50%" y1="0" x2="50%" y2="100%" className="exp-timeline-spine-track" />
+            <motion.g style={{ scaleY: spineScaleY, transformOrigin: '50% 0', transformBox: 'fill-box' }}>
+              <line x1="50%" y1="0" x2="50%" y2="100%" className="exp-timeline-spine-fill" />
+            </motion.g>
+          </svg>
 
-          <ol className="space-y-10" aria-label="Work history">
+          <div className="exp-timeline-rail exp-timeline-rail-mobile" aria-hidden="true">
+            <motion.div className="exp-timeline-rail-fill origin-top" style={{ scaleY: spineScaleY }} />
+          </div>
+
+          <ol className="exp-timeline-list" aria-label="Work history">
             {experienceItems.map((item, index) => {
-              const isLeft    = index % 2 === 0;
+              const isEven = index % 2 === 0;
               const isCurrent = index === 0;
 
               return (
-                <li
+                <motion.li
                   key={item.id}
-                  className={`relative flex flex-col md:flex-row md:items-start ${isLeft ? 'md:flex-row-reverse' : ''}`}
+                  className={`exp-timeline-item ${isEven ? 'exp-timeline-item-even' : 'exp-timeline-item-odd'}`}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{
+                    duration: 0.52,
+                    delay: index * 0.07,
+                    ease: [0.21, 0.47, 0.32, 0.98],
+                  }}
                 >
-                  {/* Dot — desktop */}
                   <span
-                    className="hidden md:block absolute left-1/2 -translate-x-1/2 mt-7 w-3 h-3 rounded-full z-10"
-                    style={{
-                      backgroundColor: isCurrent ? 'var(--brand-primary)' : 'var(--timeline-dot)',
-                      border: '2.5px solid var(--bg-page)',
-                      boxShadow: isCurrent ? 'var(--glow-brand)' : 'none',
-                    }}
-                    aria-hidden="true"
-                  />
-                  {/* Dot — mobile */}
-                  <span
-                    className="md:hidden absolute left-5 -translate-x-1/2 mt-7 w-2.5 h-2.5 rounded-full z-10"
-                    style={{
-                      backgroundColor: 'var(--timeline-dot)',
-                      border: '2px solid var(--bg-page)',
-                    }}
+                    className={`exp-timeline-node${isCurrent ? ' exp-timeline-node-current' : ''}`}
                     aria-hidden="true"
                   />
 
-                  {/* Year — desktop badge beside dot, plain text style */}
-                  <div
-                    className={`hidden md:block absolute top-6 ${isLeft ? 'left-1/2 ml-7' : 'right-1/2 mr-7'}`}
-                    aria-hidden="true"
-                  >
-                    <span
-                      className="text-[11px] font-semibold"
-                      style={{ color: 'var(--brand-primary)' }}
-                    >
-                      {item.year}
-                    </span>
+                  <div className="exp-timeline-date">
+                    <TimelineDateBadge year={item.year} isCurrent={isCurrent} />
                   </div>
 
-                  {/* Card */}
-                  <div
-                    className={`w-full md:w-[calc(50%-2.5rem)] pl-12 md:pl-0 ${isLeft ? 'md:pr-10' : 'md:pl-10'}`}
-                  >
-                    <div
-                      className="rounded-xl transition-all duration-200 relative"
-                      style={{
-                        backgroundColor: 'var(--bg-surface)',
-                        boxShadow: 'var(--shadow-sm)',
-                        padding: '1.5rem',
-                        /* Current role: subtle left border accent */
-                        borderLeft: isCurrent ? '2px solid var(--brand-primary)' : '2px solid transparent',
-                      }}
-                    >
-                      {/* CURRENT badge — inline text, no pill */}
-                      {isCurrent && (
-                        <div className="flex items-center gap-1.5 mb-3">
-                          <span
-                            className="w-[7px] h-[7px] rounded-full animate-pulse"
-                            style={{ backgroundColor: 'var(--brand-emerald)' }}
-                            aria-hidden="true"
-                          />
-                          <span
-                            style={{
-                              fontSize: '10px',
-                              fontWeight: 700,
-                              letterSpacing: '0.10em',
-                              textTransform: 'uppercase',
-                              color: 'var(--brand-emerald)',
-                            }}
-                          >
-                            Current
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Mobile year */}
-                      <div className="md:hidden mb-2">
-                        <span className="text-[11px] font-semibold" style={{ color: 'var(--brand-primary)' }}>
-                          {item.year}
-                        </span>
-                      </div>
-
-                      {/* Role header — icon is just an accent, no border box */}
-                      <div className="flex items-start gap-3 mb-4">
-                        <Briefcase
-                          size={16}
-                          className="shrink-0 mt-[3px]"
-                          style={{ color: 'var(--brand-primary)' }}
-                          aria-hidden="true"
-                        />
-                        <div className="min-w-0">
-                          <h3
-                            className="text-[15px] sm:text-[16px] font-bold leading-snug"
-                            style={{ color: 'var(--text-primary)' }}
-                          >
-                            {item.role}
-                          </h3>
-                          <p
-                            className="text-[13px] mt-0.5"
-                            style={{ color: 'var(--text-tertiary)' }}
-                          >
-                            {item.company} · {item.duration}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Responsibilities */}
-                      <ul className="space-y-2.5 mb-5" aria-label="Key responsibilities">
-                        {item.responsibilities.map((resp, idx) => (
-                          <li
-                            key={idx}
-                            className="text-[13px] leading-[1.72] flex items-start gap-2.5"
-                            style={{ color: 'var(--text-secondary)' }}
-                          >
-                            <span
-                              style={{ color: 'var(--brand-primary)', fontSize: '9px', marginTop: '5px', flexShrink: 0 }}
-                              aria-hidden="true"
-                            >
-                              ▹
-                            </span>
-                            <span>{resp}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      {/* Technologies — plain text inline */}
-                      {item.technologies.length > 0 && (
-                        <p
-                          className="text-[12px] leading-[1.7]"
-                          style={{
-                            color: 'var(--text-muted)',
-                            paddingTop: '0.875rem',
-                            borderTop: '1px solid var(--border-subtle)',
-                          }}
-                        >
-                          {item.technologies.join(' · ')}
-                        </p>
-                      )}
-                    </div>
+                  <div className="exp-timeline-content">
+                    <TimelineContentCard item={item} isCurrent={isCurrent} />
                   </div>
-                </li>
+                </motion.li>
               );
             })}
           </ol>
         </div>
-      </motion.section>
+      </section>
 
-      {/* ══════════════════════════════════════════
-          BUSINESS VALUE DELIVERED
-          Cards kept — each is a distinct contained topic.
-          Icon: no border box, just tinted background.
-      ══════════════════════════════════════════ */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={vp}
-        variants={staggerContainer}
-        aria-label="Business Value Delivered"
-        className="space-y-8"
-      >
+      <SectionReveal animation="stagger" ariaLabel="Business Value Delivered" className="space-y-8">
         <motion.div variants={fadeInUp}>
           <span className="section-label" style={{ color: 'var(--brand-emerald)' }}>
             Qualitative Outcomes
@@ -285,34 +220,24 @@ export default function ExperienceView() {
           {impacts.map(({ icon: Icon, accent, tint, title, description }, i) => (
             <motion.div
               key={title}
-              initial="hidden"
-              whileInView="visible"
-              viewport={vp}
               variants={fadeInUp}
               transition={{ delay: i * 0.065 }}
-              className="flex flex-col gap-4"
+              className="impact-card group"
             >
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                className="impact-card-icon"
                 style={{ backgroundColor: tint, color: accent }}
               >
                 <Icon size={19} aria-hidden="true" />
               </div>
               <div>
-                <h3
-                  className="text-[15px] font-semibold mb-2"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  {title}
-                </h3>
-                <p className="text-body-sm leading-[1.75]" style={{ color: 'var(--text-secondary)' }}>
-                  {description}
-                </p>
+                <h3 className="impact-card-title">{title}</h3>
+                <p className="impact-card-desc">{description}</p>
               </div>
             </motion.div>
           ))}
         </div>
-      </motion.section>
+      </SectionReveal>
 
     </div>
   );

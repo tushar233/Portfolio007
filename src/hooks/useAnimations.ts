@@ -179,12 +179,12 @@ export function useParticleCanvas(canvasRef: React.RefObject<HTMLCanvasElement |
    Shared Framer Motion variants — typed correctly for v13
 ──────────────────────────────────────────────────────── */
 export const fadeInUp: Variants = {
-  hidden:  { opacity: 0, y: 28 },
+  hidden:  { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.21, 0.47, 0.32, 0.98] as const } },
 };
 
 export const fadeInDown: Variants = {
-  hidden:  { opacity: 0, y: -20 },
+  hidden:  { opacity: 0, y: 12 },
   visible: { opacity: 1, y: 0,  transition: { duration: 0.45, ease: [0.21, 0.47, 0.32, 0.98] as const } },
 };
 
