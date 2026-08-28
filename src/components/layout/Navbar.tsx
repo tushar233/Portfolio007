@@ -100,7 +100,7 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
             aria-label="Go to overview — Tushar, Lead Salesforce Architect"
           >
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-base shrink-0 group-hover:scale-105 transition-transform duration-200"
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-on-brand font-black text-base shrink-0 group-hover:scale-105 transition-transform duration-200"
               style={{
                 background: 'var(--gradient-brand)',
                 boxShadow: 'var(--shadow-brand)',

@@ -260,7 +260,7 @@ export default function AboutView() {
             >
               {/* Badge icon — gradient colour, no outer card */}
               <div
-                className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${cert.badgeColor} flex items-center justify-center text-white shrink-0`}
+                className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${cert.badgeColor} flex items-center justify-center text-on-brand shrink-0`}
               >
                 <Award size={16} aria-hidden="true" />
               </div>
