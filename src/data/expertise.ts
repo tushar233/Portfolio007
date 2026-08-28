@@ -109,15 +109,28 @@ export const specializations: Specialization[] = [
   {
     id: 'sf-clouds',
     title: 'Salesforce Clouds',
-    whatIWorkOn: 'Multi-cloud implementations across Sales, Service, Marketing, Data, CPQ, and Experience Cloud — configuring, customizing, and integrating cloud products to work as a unified platform.',
-    technologies: ['Sales Cloud', 'Service Cloud', 'Marketing Cloud', 'Data Cloud', 'CPQ', 'Experience Cloud'],
+    whatIWorkOn: 'Multi-cloud implementations across Sales, Service, Marketing, Data, and Experience Cloud — configuring, customizing, and integrating cloud products to work as a unified platform.',
+    technologies: ['Sales Cloud', 'Service Cloud', 'Marketing Cloud', 'Data Cloud', 'Experience Cloud', 'Omni-Channel'],
     problemsSolved: [
       'Multi-cloud data unification and customer 360',
-      'Complex sales processes with CPQ and revenue management',
+      'Cross-cloud process alignment for sales and service teams',
       'Customer self-service portals on Experience Cloud',
       'Marketing automation and journey orchestration',
     ],
     approach: 'Evaluate each cloud product against business requirements, design cross-cloud data models, implement with a phased rollout strategy, and ensure seamless integration between clouds.',
+  },
+  {
+    id: 'cpq',
+    title: 'CPQ & Revenue Cloud',
+    whatIWorkOn: 'Salesforce CPQ and Revenue Cloud delivery — product catalogs, pricing rules, quote templates, guided selling, subscription lifecycle, and quote-to-cash automation for complex enterprise sales.',
+    technologies: ['Salesforce CPQ', 'Product Rules', 'Price Rules', 'Quote Templates', 'Guided Selling', 'Subscription Management', 'Apex Pricing Plugins'],
+    problemsSolved: [
+      'Complex product bundling and configuration rules',
+      'Multi-tier discounting and contract pricing models',
+      'Quote-to-cash automation with approval chains',
+      'Subscription renewals, amendments, and revenue recognition handoffs',
+    ],
+    approach: 'Model product catalogs and pricing logic declaratively first, extend with Apex only where CPQ limits require it. Design quote flows for sales usability, enforce governance with approval rules, and test pricing scenarios across edge cases before go-live.',
   },
   {
     id: 'data-architecture',
@@ -216,19 +229,30 @@ export interface Certification {
   badgeColor: string;
 }
 
+export const CERTIFICATION_PRIORITY = [
+  'Salesforce Certified Administrator',
+  'Salesforce Certified Platform Developer I',
+  'Salesforce Certified Platform Developer II',
+  'Salesforce Certified Data Cloud',
+  'Salesforce Certified Revenue Cloud / CPQ Specialist',
+  'Salesforce Certified Service Cloud Consultant',
+  'Salesforce Certified Sales Cloud Consultant',
+  'Salesforce Certified AI Specialist',
+] as const;
+
+/** @deprecated Use CERTIFICATION_PRIORITY */
+export const CERTIFICATION_ORDER = CERTIFICATION_PRIORITY;
+
+/** Alternate titles mapped to canonical priority keys */
+const CERT_TITLE_ALIASES: Record<string, string> = {
+  'Salesforce Certified Data Cloud Consultant / Specialist': 'Salesforce Certified Data Cloud',
+};
+
+function canonicalCertTitle(title: string): string {
+  return CERT_TITLE_ALIASES[title] ?? title;
+}
+
 export const certifications: Certification[] = [
-  {
-    title: 'Salesforce Platform Developer II',
-    issuer: 'Salesforce',
-    category: 'Development',
-    badgeColor: 'from-blue-600 to-indigo-600',
-  },
-  {
-    title: 'Salesforce Platform Developer I',
-    issuer: 'Salesforce',
-    category: 'Development',
-    badgeColor: 'from-cyan-600 to-blue-600',
-  },
   {
     title: 'Salesforce Certified Administrator',
     issuer: 'Salesforce',
@@ -236,16 +260,40 @@ export const certifications: Certification[] = [
     badgeColor: 'from-emerald-600 to-teal-600',
   },
   {
-    title: 'Salesforce Service Cloud Consultant',
+    title: 'Salesforce Certified Platform Developer I',
+    issuer: 'Salesforce',
+    category: 'Development',
+    badgeColor: 'from-cyan-600 to-blue-600',
+  },
+  {
+    title: 'Salesforce Certified Platform Developer II',
+    issuer: 'Salesforce',
+    category: 'Development',
+    badgeColor: 'from-blue-600 to-indigo-600',
+  },
+  {
+    title: 'Salesforce Certified Data Cloud',
+    issuer: 'Salesforce',
+    category: 'Consulting',
+    badgeColor: 'from-teal-600 to-cyan-600',
+  },
+  {
+    title: 'Salesforce Certified Revenue Cloud / CPQ Specialist',
+    issuer: 'Salesforce',
+    category: 'Consulting',
+    badgeColor: 'from-amber-600 to-orange-600',
+  },
+  {
+    title: 'Salesforce Certified Service Cloud Consultant',
     issuer: 'Salesforce',
     category: 'Consulting',
     badgeColor: 'from-purple-600 to-indigo-600',
   },
   {
-    title: 'Salesforce Sales Cloud Consultant',
+    title: 'Salesforce Certified Sales Cloud Consultant',
     issuer: 'Salesforce',
     category: 'Consulting',
-    badgeColor: 'from-amber-600 to-orange-600',
+    badgeColor: 'from-orange-600 to-amber-600',
   },
   {
     title: 'Salesforce Certified AI Specialist',
@@ -253,4 +301,56 @@ export const certifications: Certification[] = [
     category: 'AI & Data',
     badgeColor: 'from-fuchsia-600 to-pink-600',
   },
+  {
+    title: 'Salesforce Certified JavaScript Developer I',
+    issuer: 'Salesforce',
+    category: 'Development',
+    badgeColor: 'from-sky-600 to-blue-600',
+  },
+  {
+    title: 'Salesforce Certified Sharing and Visibility Architect',
+    issuer: 'Salesforce',
+    category: 'Architecture',
+    badgeColor: 'from-violet-600 to-purple-600',
+  },
+  {
+    title: 'Salesforce Certified Integration Architect',
+    issuer: 'Salesforce',
+    category: 'Architecture',
+    badgeColor: 'from-indigo-600 to-blue-700',
+  },
 ];
+
+/** Deduplicated certifications — priority sequence first, then remaining specialized credentials */
+export function getOrderedCertifications(): Certification[] {
+  const seen = new Set<string>();
+  const byCanonical = new Map<string, Certification>();
+
+  for (const cert of certifications) {
+    const canonical = canonicalCertTitle(cert.title);
+    if (!byCanonical.has(canonical)) {
+      byCanonical.set(canonical, { ...cert, title: canonical });
+    }
+  }
+
+  const ordered: Certification[] = [];
+
+  for (const title of CERTIFICATION_PRIORITY) {
+    const cert = byCanonical.get(title);
+    if (cert && !seen.has(title)) {
+      seen.add(title);
+      ordered.push(cert);
+    }
+  }
+
+  for (const cert of certifications) {
+    const canonical = canonicalCertTitle(cert.title);
+    if (!seen.has(canonical)) {
+      seen.add(canonical);
+      const match = byCanonical.get(canonical);
+      if (match) ordered.push(match);
+    }
+  }
+
+  return ordered;
+}

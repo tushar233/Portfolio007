@@ -1,8 +1,6 @@
+import { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 
-/* ─────────────────────────────────────────────
-   Sun icon (light mode indicator)
-───────────────────────────────────────────── */
 function SunIcon({ size = 16 }: { size?: number }) {
   return (
     <svg
@@ -29,9 +27,6 @@ function SunIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-/* ─────────────────────────────────────────────
-   Moon icon (dark mode indicator)
-───────────────────────────────────────────── */
 function MoonIcon({ size = 16 }: { size?: number }) {
   return (
     <svg
@@ -50,11 +45,6 @@ function MoonIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-/* ─────────────────────────────────────────────
-   ThemeToggle
-   Props:
-     size  — 'sm' | 'md' (default 'md')
-───────────────────────────────────────────── */
 interface Props {
   size?: 'sm' | 'md';
   className?: string;
@@ -63,43 +53,52 @@ interface Props {
 export default function ThemeToggle({ size = 'md', className = '' }: Props) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
+  const [spinning, setSpinning] = useState(false);
 
   const iconSize = size === 'sm' ? 14 : 16;
-  const btnSize  = size === 'sm'
-    ? 'w-8 h-8'
-    : 'w-9 h-9';
+  const btnSize  = size === 'sm' ? 'w-8 h-8' : 'w-9 h-9';
+
+  const handleToggle = () => {
+    setSpinning(true);
+    toggleTheme();
+    window.setTimeout(() => setSpinning(false), 550);
+  };
 
   return (
     <button
       type="button"
-      onClick={toggleTheme}
+      onClick={handleToggle}
       aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       aria-pressed={isDark}
       title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       className={[
         btnSize,
-        'relative flex items-center justify-center rounded-xl',
-        'border transition-all duration-200 cursor-pointer shrink-0',
-        /* colours driven entirely by CSS vars */
-        'bg-[var(--interactive-default)] border-[var(--border-default)]',
+        'relative flex items-center justify-center rounded-lg overflow-hidden',
+        'cursor-pointer shrink-0',
+        'bg-[var(--interactive-default)]',
         'text-[var(--text-secondary)]',
         'hover:bg-[var(--interactive-hover)] hover:text-[var(--text-primary)]',
-        'hover:border-[var(--border-strong)]',
         'focus-visible:outline-2 focus-visible:outline-[var(--border-focus)]',
         'focus-visible:outline-offset-2',
+        spinning ? 'theme-toggle-spin' : '',
         className,
       ].join(' ')}
     >
-      {/* Smooth icon crossfade */}
       <span
-        className="absolute inset-0 flex items-center justify-center transition-all duration-300"
-        style={{ opacity: isDark ? 1 : 0, transform: isDark ? 'scale(1) rotate(0deg)' : 'scale(0.5) rotate(90deg)' }}
+        className="absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out"
+        style={{
+          opacity: isDark ? 1 : 0,
+          transform: isDark ? 'scale(1) rotate(0deg)' : 'scale(0.4) rotate(180deg)',
+        }}
       >
         <MoonIcon size={iconSize} />
       </span>
       <span
-        className="absolute inset-0 flex items-center justify-center transition-all duration-300"
-        style={{ opacity: isDark ? 0 : 1, transform: isDark ? 'scale(0.5) rotate(-90deg)' : 'scale(1) rotate(0deg)' }}
+        className="absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out"
+        style={{
+          opacity: isDark ? 0 : 1,
+          transform: isDark ? 'scale(0.4) rotate(-180deg)' : 'scale(1) rotate(0deg)',
+        }}
       >
         <SunIcon size={iconSize} />
       </span>

@@ -9,34 +9,55 @@ interface NavbarProps {
   setActiveTab: (tab: string) => void;
 }
 
+function HireMeButton({ onClick }: { onClick: () => void }) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) * 0.18;
+    const y = (e.clientY - rect.top - rect.height / 2) * 0.18;
+    el.style.transform = `translate(${x}px, ${y}px)`;
+  };
+
+  const handleMouseLeave = () => {
+    if (ref.current) ref.current.style.transform = '';
+  };
+
+  return (
+    <button
+      ref={ref}
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="hire-me-btn btn-primary hidden lg:inline-flex"
+      style={{ outlineColor: 'var(--border-focus)' }}
+    >
+      Hire Me
+    </button>
+  );
+}
+
 export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
-  const [isScrolled,       setIsScrolled]       = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const drawerRef    = useRef<HTMLElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  /* ── Scroll detection ── */
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  /* ── Body scroll lock ── */
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isMobileMenuOpen]);
 
-  /* ── Focus trap ── */
   useEffect(() => {
     if (!isMobileMenuOpen) return;
     const drawer = drawerRef.current;
     if (!drawer) return;
     const firstFocusable = drawer.querySelector<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     firstFocusable?.focus();
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { closeMobileMenu(); return; }
       if (e.key !== 'Tab') return;
@@ -68,32 +89,16 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
 
   return (
     <>
-      {/* ════════════════════════════════════════
-          HEADER  — 72px tall, breathing room
-      ════════════════════════════════════════ */}
-      <header
-        className="fixed top-0 left-0 right-0 w-full z-50 flex justify-center transition-all duration-300"
-        style={{
-          height: '72px',
-          backgroundColor: isScrolled ? 'var(--nav-bg)' : 'transparent',
-          backdropFilter: isScrolled ? 'blur(24px)' : 'none',
-          WebkitBackdropFilter: isScrolled ? 'blur(24px)' : 'none',
-          borderBottom: isScrolled
-            ? '1px solid var(--nav-border)'
-            : '1px solid transparent',
-          boxShadow: isScrolled ? 'var(--shadow-sm)' : 'none',
-        }}
-      >
-        <div className="portfolio-container flex items-center justify-between h-full">
+      <header className="nav-glass">
+        <div className="portfolio-container h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-4">
 
-          {/* ── Brand ── */}
+          {/* ── Left: Avatar + Name + Role ── */}
           <button
             onClick={() => handleTabClick('overview')}
-            className="flex items-center gap-3 group shrink-0 rounded-xl"
+            className="flex items-center gap-3 group shrink-0 rounded-lg justify-self-start focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ outlineColor: 'var(--border-focus)' }}
             aria-label="Go to overview — Tushar, Lead Salesforce Architect"
           >
-            {/* Logo mark — slightly larger at 40px */}
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-base shrink-0 group-hover:scale-105 transition-transform duration-200"
               style={{
@@ -105,11 +110,10 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
               T
             </div>
 
-            {/* Brand text */}
-            <div className="hidden min-[480px]:flex flex-col justify-center leading-none gap-0.5">
+            <div className="hidden min-[480px]:flex flex-col justify-center leading-none gap-1">
               <div className="flex items-center gap-2">
                 <span
-                  className="text-[14px] font-black tracking-widest uppercase"
+                  className="text-[13px] font-black tracking-[0.14em] uppercase"
                   style={{ color: 'var(--text-primary)' }}
                 >
                   Tushar
@@ -121,7 +125,7 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
                 />
               </div>
               <span
-                className="text-[10.5px] uppercase tracking-[0.12em] font-semibold"
+                className="text-[10px] uppercase tracking-[0.14em] font-semibold"
                 style={{ color: 'var(--text-tertiary)' }}
               >
                 Lead SFDC Architect
@@ -129,13 +133,10 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
             </div>
           </button>
 
-          {/* ── Desktop nav (md+) ──
-              Clean underline-style, no pill/box container.
-              Feels like a premium product nav.           */}
+          {/* ── Center: Clean horizontal nav (desktop) ── */}
           <nav
             aria-label="Main navigation"
-            className="hidden md:flex items-center"
-            style={{ gap: '0.125rem' }}
+            className="nav-bar-menu hidden lg:flex justify-self-center"
           >
             {mainTabs.map((tab) => {
               const isActive = activeTab === tab.id;
@@ -144,28 +145,15 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
                   key={tab.id}
                   onClick={() => handleTabClick(tab.id)}
                   aria-current={isActive ? 'page' : undefined}
-                  className="relative px-3.5 py-2 rounded-lg text-[13px] font-medium whitespace-nowrap transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-1"
-                  style={{
-                    color: isActive ? 'var(--text-primary)' : 'var(--text-tertiary)',
-                    outlineColor: 'var(--border-focus)',
-                    letterSpacing: '0.005em',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.color = 'var(--text-tertiary)';
-                  }}
+                  className={`nav-bar-link focus-visible:outline-2 focus-visible:outline-offset-2${isActive ? ' nav-bar-link-active' : ''}`}
+                  style={{ outlineColor: 'var(--border-focus)' }}
                 >
-                  {tab.name}
-
-                  {/* Animated active underline */}
+                  <span>{tab.name}</span>
                   {isActive && (
-                    <motion.div
-                      layoutId="nav-indicator"
-                      className="absolute bottom-0 left-3.5 right-3.5 h-[1.5px] rounded-full"
-                      style={{ background: 'var(--brand-primary)' }}
-                      transition={{ type: 'spring', stiffness: 500, damping: 42 }}
+                    <motion.span
+                      layoutId="navUnderline"
+                      className="nav-bar-underline"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     />
                   )}
                 </button>
@@ -173,31 +161,16 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
             })}
           </nav>
 
-          {/* ── Right actions ── */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          {/* ── Right: Theme toggle + Hire Me + Mobile menu ── */}
+          <div className="flex items-center gap-3 shrink-0 justify-self-end">
             <ThemeToggle />
+            <HireMeButton onClick={() => handleTabClick('contact')} />
 
-            {/* Hire Me — clean, not pill-shaped */}
-            <button
-              onClick={() => handleTabClick('contact')}
-              className="hidden lg:inline-flex items-center gap-1.5 px-5 py-2 rounded-lg text-[13px] font-semibold text-white transition-all duration-150 hover:opacity-90 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{
-                background: 'var(--gradient-brand)',
-                boxShadow: 'var(--shadow-brand)',
-                minHeight: '38px',
-                outlineColor: 'var(--border-focus)',
-              }}
-            >
-              Hire Me
-            </button>
-
-            {/* Hamburger — mobile only */}
             <button
               ref={hamburgerRef}
-              className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg border transition-colors duration-150"
+              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg transition-colors duration-150"
               style={{
                 backgroundColor: 'var(--interactive-default)',
-                borderColor: 'var(--border-default)',
                 color: 'var(--text-primary)',
               }}
               onClick={() => setIsMobileMenuOpen(true)}
@@ -211,9 +184,7 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
         </div>
       </header>
 
-      {/* ════════════════════════════════════════
-          MOBILE DRAWER
-      ════════════════════════════════════════ */}
+      {/* ── Mobile drawer ── */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -221,10 +192,9 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.16 }}
-            className="fixed inset-0 z-40 md:hidden"
+            className="fixed inset-0 z-40 lg:hidden"
             role="presentation"
           >
-            {/* Backdrop */}
             <div
               className="absolute inset-0"
               style={{ backgroundColor: 'rgba(0,0,0,0.60)', backdropFilter: 'blur(4px)' }}
@@ -232,7 +202,6 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
               aria-hidden="true"
             />
 
-            {/* Panel */}
             <motion.nav
               id="mobile-nav-drawer"
               ref={drawerRef}
@@ -243,18 +212,16 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 400, damping: 38 }}
-              className="absolute top-0 right-0 bottom-0 w-72 max-w-[85vw] flex flex-col pt-20 pb-8 px-6"
+              className="absolute top-0 right-0 bottom-0 w-72 max-w-[85vw] flex flex-col pt-24 pb-8 px-6"
               style={{
                 backgroundColor: 'var(--bg-surface)',
-                borderLeft: '1px solid var(--border-subtle)',
                 boxShadow: 'var(--shadow-xl)',
               }}
             >
               <button
-                className="absolute top-5 right-5 w-9 h-9 flex items-center justify-center rounded-lg border"
+                className="absolute top-6 right-5 w-9 h-9 flex items-center justify-center rounded-lg"
                 style={{
                   backgroundColor: 'var(--interactive-default)',
-                  borderColor: 'var(--border-default)',
                   color: 'var(--text-secondary)',
                 }}
                 onClick={closeMobileMenu}
@@ -279,40 +246,20 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
                       transition={{ delay: i * 0.04, duration: 0.20 }}
                       onClick={() => handleTabClick(tab.id)}
                       aria-current={isActive ? 'page' : undefined}
-                      className="flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium text-left transition-all duration-150 border"
-                      style={
-                        isActive
-                          ? {
-                              background: 'var(--brand-primary-tint)',
-                              borderColor: 'var(--brand-primary-border)',
-                              color: 'var(--text-primary)',
-                            }
-                          : {
-                              backgroundColor: 'transparent',
-                              borderColor: 'transparent',
-                              color: 'var(--text-secondary)',
-                            }
-                      }
+                      className={`mobile-nav-link text-[15px] font-medium text-left transition-all duration-150${isActive ? ' mobile-nav-link-active' : ''}`}
                     >
                       <Icon
                         size={16}
                         aria-hidden="true"
-                        style={{ color: isActive ? 'var(--brand-primary)' : 'var(--text-muted)', flexShrink: 0 }}
+                        className="relative z-10 shrink-0"
+                        style={{ color: isActive ? 'var(--brand-primary)' : 'var(--text-muted)' }}
                       />
-                      <span>{tab.name}</span>
-                      {isActive && (
-                        <span
-                          className="ml-auto w-1.5 h-1.5 rounded-full shrink-0"
-                          style={{ backgroundColor: 'var(--brand-primary)' }}
-                          aria-hidden="true"
-                        />
-                      )}
+                      <span className="relative z-10">{tab.name}</span>
                     </motion.button>
                   );
                 })}
               </div>
 
-              {/* Bottom */}
               <div
                 className="pt-5 mt-auto border-t flex flex-col gap-3"
                 style={{ borderTopColor: 'var(--border-subtle)' }}
@@ -325,14 +272,10 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
                 </div>
                 <button
                   onClick={() => handleTabClick('contact')}
-                  className="w-full py-3.5 rounded-xl text-white font-semibold text-sm tracking-wide transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2"
-                  style={{
-                    background: 'var(--gradient-brand)',
-                    boxShadow: 'var(--shadow-brand)',
-                    outlineColor: 'var(--border-focus)',
-                  }}
+                  className="hire-me-btn btn-primary w-full"
+                  style={{ outlineColor: 'var(--border-focus)' }}
                 >
-                  Get In Touch
+                  Hire Me
                 </button>
               </div>
             </motion.nav>

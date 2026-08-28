@@ -11,6 +11,7 @@ import ProjectsView from './components/projects/ProjectsView';
 import ArchitectureView from './components/architecture/ArchitectureView';
 import ExperienceView from './components/experience/ExperienceView';
 import ContactView from './components/contact/ContactView';
+import AmbientBackground from './components/ui/AmbientBackground';
 
 /* ─────────────────────────────────────────────
    Error Boundary
@@ -84,7 +85,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, EBState> {
    Typed correctly for Framer Motion v13
 ───────────────────────────────────────────── */
 const pageVariants: Variants = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 8 },
   animate: {
     opacity: 1,
     y: 0,
@@ -120,6 +121,8 @@ function AppShell() {
       className="w-full min-h-dvh flex flex-col page-atmosphere"
       style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-primary)' }}
     >
+      <AmbientBackground />
+
       {/* ── Accessibility: skip-to-main-content ── */}
       <a href="#main-content" className="skip-link">
         Skip to main content
@@ -127,15 +130,10 @@ function AppShell() {
 
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/*
-        pt-[72px] clears fixed navbar (72px tall).
-        No pb hack — footer sits naturally after main content.
-      */}
       <main
         id="main-content"
         tabIndex={-1}
-        className="w-full flex-1 flex flex-col focus-visible:outline-none"
-        style={{ paddingTop: '72px' }}
+        className="w-full flex-1 flex flex-col focus-visible:outline-none main-content relative z-10"
         aria-label="Main content"
       >
         <div className="portfolio-container w-full">

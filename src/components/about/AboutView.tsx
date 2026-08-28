@@ -2,12 +2,14 @@ import { motion } from 'framer-motion';
 import {
   fadeInUp,
   slideInLeft,
-  slideInRight,
-  staggerContainer,
-  useAnimatedCounter,
 } from '../../hooks/useAnimations';
-import { certifications } from '../../data/expertise';
-import { Award, Users, Shield, HeartHandshake, CheckCircle } from 'lucide-react';
+import SectionReveal from '../ui/SectionReveal';
+import { getOrderedCertifications } from '../../data/expertise';
+import {
+  Award, Users, Shield, HeartHandshake, CheckCircle,
+  Radio, Eye, Compass, RefreshCw, TrendingUp, Bug,
+  type LucideIcon,
+} from 'lucide-react';
 
 const vp = { once: true, margin: '-50px' };
 
@@ -78,49 +80,69 @@ const principles = [
   'Zero technical debt philosophy',
 ];
 
+const VALUE_PROPOSITIONS: { title: string; icon: LucideIcon; accent: string }[] = [
+  {
+    title: 'Systems that talk to each other, automatically',
+    icon: Radio,
+    accent: 'var(--brand-primary)',
+  },
+  {
+    title: 'One customer view, every channel',
+    icon: Eye,
+    accent: 'var(--brand-secondary)',
+  },
+  {
+    title: 'Clear plan before a single line of code',
+    icon: Compass,
+    accent: 'var(--brand-purple)',
+  },
+  {
+    title: 'No costly rework down the line',
+    icon: RefreshCw,
+    accent: 'var(--brand-emerald)',
+  },
+  {
+    title: 'Built to scale with your business',
+    icon: TrendingUp,
+    accent: 'var(--brand-amber)',
+  },
+  {
+    title: 'Fewer bugs, fewer fire-drills',
+    icon: Bug,
+    accent: 'var(--brand-pink)',
+  },
+];
+
 export default function AboutView() {
-  const { count: yrs, ref: yrsRef } = useAnimatedCounter(7);
-  const { count: cls, ref: clsRef } = useAnimatedCounter(6);
-  const { count: prs, ref: prsRef } = useAnimatedCounter(20);
+  const orderedCerts = getOrderedCertifications();
 
   return (
     <div className="page-top sections-gap">
 
       {/* ── PAGE HEADER ── */}
-      <motion.header
-        initial="hidden"
-        animate="visible"
-        variants={staggerContainer}
-        className="max-w-3xl"
-      >
-        <motion.span variants={fadeInUp} className="section-label">
-          About Me &amp; My Background
-        </motion.span>
-        <motion.h1 variants={fadeInUp} className="text-h1 mt-2 mb-4" style={{ color: 'var(--text-primary)' }}>
+      <SectionReveal as="header" animation="fadeDown" className="page-section-header">
+        <span className="section-label">About Me &amp; My Background</span>
+        <h1 className="text-h1 mt-2 mb-4" style={{ color: 'var(--text-primary)' }}>
           The Engineer Behind the Architecture
-        </motion.h1>
-        <motion.p variants={fadeInUp} className="section-subtitle">
+        </h1>
+        <p className="section-subtitle">
           Over 7+ years of engineering robust Salesforce multi-cloud platforms, bridging enterprise
           business requirements with deep technical execution.
-        </motion.p>
-      </motion.header>
+        </p>
+      </SectionReveal>
 
       {/* ── STORY + STATS ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-
-        {/* Story — no card wrapper, just clean text on the page canvas */}
+      <div className="about-story-layout">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={vp}
           variants={slideInLeft}
-          className="lg:col-span-3 flex flex-col gap-6"
+          className="about-story-panel"
         >
-          <h2 className="text-h3" style={{ color: 'var(--text-primary)' }}>
-            My Salesforce Engineering Journey
-          </h2>
+          <h2 className="about-story-heading">My Salesforce Engineering Journey</h2>
 
-          <div className="space-y-5">
+          <div className="about-story-body">
             {[
               <>
                 Over seven years ago, I began my journey in the Salesforce ecosystem — not just learning
@@ -129,9 +151,9 @@ export default function AboutView() {
               </>,
               <>
                 Today, as a{' '}
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Lead Salesforce Developer</span>,
+                <span className="about-story-emphasis">Lead Salesforce Developer</span>,
                 I architect and build solutions across{' '}
-                <span style={{ color: 'var(--brand-secondary)', fontWeight: 500 }}>
+                <span className="about-story-highlight">
                   Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, CPQ, and Experience Cloud
                 </span>
                 . My work spans custom Apex frameworks, responsive Lightning Web Components, multi-system
@@ -139,93 +161,56 @@ export default function AboutView() {
               </>,
               <>
                 I approach every project with an{' '}
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>architecture-first mindset</span>{' '}
+                <span className="about-story-emphasis">architecture-first mindset</span>{' '}
                 — understanding data models, governor limits, security permissions, and edge cases before
                 writing a single line of code.
               </>,
             ].map((para, i) => (
-              <p
-                key={i}
-                className="text-body leading-[1.85]"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                {para}
-              </p>
+              <p key={i} className="about-story-paragraph">{para}</p>
             ))}
           </div>
 
-          {/* Engineering principles — plain checklist, no pills/borders */}
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={vp}
             variants={staggerKids}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1"
+            className="about-principles-grid"
           >
             {principles.map((t) => (
-              <motion.div
-                key={t}
-                variants={kid}
-                className="flex items-center gap-2.5 text-body-sm"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                <CheckCircle size={13} style={{ color: 'var(--brand-emerald)', flexShrink: 0 }} aria-hidden="true" />
+              <motion.div key={t} variants={kid} className="about-principle-item">
+                <CheckCircle size={15} className="about-principle-icon" aria-hidden="true" />
                 <span>{t}</span>
               </motion.div>
             ))}
           </motion.div>
         </motion.div>
 
-        {/* Stats — numbers on the canvas, no card borders */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={vp}
-          variants={slideInRight}
-          className="lg:col-span-2 grid grid-cols-2 gap-x-8 gap-y-10"
+          variants={staggerKids}
+          className="about-value-panel"
         >
-          {[
-            { refEl: yrsRef, val: yrs, sfx: '+', lbl: 'Years Salesforce Experience',   accent: 'var(--text-primary)'     },
-            { refEl: clsRef, val: cls, sfx: '+', lbl: 'Salesforce Clouds Mastered',    accent: 'var(--brand-secondary)'  },
-            { refEl: prsRef, val: prs, sfx: '+', lbl: 'Enterprise Projects Delivered', accent: 'var(--brand-emerald)'    },
-          ].map(({ refEl, val, sfx, lbl, accent }) => (
-            <div key={lbl} ref={refEl}>
-              <div
-                className="text-5xl font-black leading-none mb-2"
-                style={{ color: accent, letterSpacing: '-0.03em' }}
+          <h2 className="about-value-heading">What Clients Get</h2>
+          <p className="about-value-lead">
+            Outcomes I design for on every engagement — not just features shipped.
+          </p>
+          <div className="about-value-grid">
+            {VALUE_PROPOSITIONS.map(({ title, icon: Icon, accent }) => (
+              <motion.article
+                key={title}
+                variants={kid}
+                className="about-value-card group"
+                style={{ '--value-accent': accent } as React.CSSProperties}
               >
-                {val}{sfx}
-              </div>
-              <div
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.4,
-                }}
-              >
-                {lbl}
-              </div>
-            </div>
-          ))}
-
-          <div>
-            <div
-              className="text-3xl font-black leading-none mb-2"
-              style={{ color: 'var(--brand-purple)', letterSpacing: '-0.02em' }}
-            >
-              End-to-End
-            </div>
-            <div
-              style={{
-                fontSize: '11px',
-                fontWeight: 600,
-                color: 'var(--text-muted)',
-                lineHeight: 1.4,
-              }}
-            >
-              Full CRM Lifecycle Architecture
-            </div>
+                <div className="about-value-icon" aria-hidden="true">
+                  <Icon size={18} />
+                </div>
+                <p className="about-value-text">{title}</p>
+              </motion.article>
+            ))}
           </div>
         </motion.div>
       </div>
@@ -267,15 +252,11 @@ export default function AboutView() {
           variants={staggerKids}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
         >
-          {certifications.map((cert, i) => (
+          {orderedCerts.map((cert) => (
             <motion.div
-              key={i}
+              key={cert.title}
               variants={kid}
-              className="flex items-start gap-4"
-              style={{
-                padding: '1.25rem 0',
-                borderBottom: '1px solid var(--border-subtle)',
-              }}
+              className="flex items-start gap-4 py-4"
             >
               {/* Badge icon — gradient colour, no outer card */}
               <div

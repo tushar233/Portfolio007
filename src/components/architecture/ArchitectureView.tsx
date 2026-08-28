@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import {
   FileText, Compass, Cloud, Cable, Database, Activity,
-  CheckCircle, Search, PenTool, Code,
-  Shield, Rocket, TrendingUp,
+  CheckCircle, Search, PenTool, Code, Zap, Layout, Receipt,
+  Shield, Rocket, TrendingUp, type LucideIcon,
 } from 'lucide-react';
 import { specializations } from '../../data/expertise';
+import type { Specialization } from '../../data/expertise';
 import { fadeInUp, staggerContainer } from '../../hooks/useAnimations';
+import SectionReveal from '../ui/SectionReveal';
 
 /* ─────────────────────────────────────────────
    Data
@@ -76,13 +78,111 @@ const panelVariant: Variants = {
   exit:    { opacity: 0, y: -6, transition: { duration: 0.14 } },
 };
 
+const specPanelVariant: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.07, delayChildren: 0.04 },
+  },
+  exit: { opacity: 0, transition: { duration: 0.14 } },
+};
+
+const specCardVariant: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.28, ease: [0.21, 0.47, 0.32, 0.98] as const },
+  },
+};
+
+const specProblemVariant: Variants = {
+  hidden: { opacity: 0, x: -8 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: i * 0.06, duration: 0.24, ease: [0.21, 0.47, 0.32, 0.98] as const },
+  }),
+};
+
+const SPEC_META: Record<string, { icon: LucideIcon; accent: string }> = {
+  'apex-triggers':    { icon: Code,     accent: 'var(--brand-primary)' },
+  'async-apex':       { icon: Zap,      accent: 'var(--brand-secondary)' },
+  'lwc':              { icon: Layout,   accent: 'var(--brand-purple)' },
+  'integrations':     { icon: Cable,    accent: 'var(--brand-emerald)' },
+  'sf-clouds':        { icon: Cloud,    accent: 'var(--brand-primary)' },
+  'cpq':              { icon: Receipt,  accent: 'var(--brand-amber)' },
+  'data-architecture':{ icon: Database, accent: 'var(--brand-pink)' },
+};
+
+function SpecPanel({ spec }: { spec: Specialization }) {
+  const meta = SPEC_META[spec.id] ?? { icon: Code, accent: 'var(--brand-primary)' };
+  const Icon = meta.icon;
+
+  return (
+    <motion.div
+      variants={specPanelVariant}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="arch-spec-panel"
+      style={{ '--spec-accent': meta.accent } as React.CSSProperties}
+    >
+      <motion.div variants={specCardVariant} className="arch-spec-panel-header">
+        <div className="arch-spec-panel-icon" aria-hidden="true">
+          <Icon size={22} />
+        </div>
+        <div className="arch-spec-panel-heading">
+          <h3 className="arch-spec-panel-title">{spec.title}</h3>
+        </div>
+      </motion.div>
+
+      <div className="arch-spec-cards">
+        <motion.div variants={specCardVariant} className="arch-spec-card">
+          <p className="arch-spec-card-label">What I Work On</p>
+          <p className="arch-spec-card-body">{spec.whatIWorkOn}</p>
+        </motion.div>
+
+        <motion.div variants={specCardVariant} className="arch-spec-card arch-spec-card-problems">
+          <p className="arch-spec-card-label arch-spec-card-label-emerald">Typical Problems Solved</p>
+          <ul className="arch-spec-problems-list">
+            {spec.problemsSolved.map((prob, i) => (
+              <motion.li
+                key={prob}
+                custom={i}
+                variants={specProblemVariant}
+                className="arch-spec-problem-item"
+              >
+                <CheckCircle size={15} className="arch-spec-problem-icon" aria-hidden="true" />
+                <span>{prob}</span>
+              </motion.li>
+            ))}
+          </ul>
+        </motion.div>
+
+        <motion.div variants={specCardVariant} className="arch-spec-card">
+          <p className="arch-spec-card-label">Key Technologies &amp; Tools</p>
+          <div className="arch-spec-tech-grid">
+            {spec.technologies.map((tech) => (
+              <span key={tech} className="arch-spec-tech-tag">{tech}</span>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div variants={specCardVariant} className="arch-spec-card arch-spec-card-approach">
+          <p className="arch-spec-card-label">Engineering Approach</p>
+          <p className="arch-spec-card-body">{spec.approach}</p>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
 const vp = { once: true, margin: '-50px' };
 
 export default function ArchitectureView() {
-  const [activeLayer,   setActiveLayer]   = useState(2);
+  const [activeLayer,   setActiveLayer]   = useState(0);
   const [activeSpecTab, setActiveSpecTab] = useState(specializations[0]?.id || 'apex-triggers');
-
-  const currentSpec = specializations.find((s) => s.id === activeSpecTab) ?? specializations[0];
 
   const getPanelId = (id: number) => `arch-layer-panel-${id}`;
   const getTabId   = (id: number) => `arch-layer-tab-${id}`;
@@ -91,12 +191,7 @@ export default function ArchitectureView() {
     <div className="page-top sections-gap">
 
       {/* ── HEADER ── */}
-      <motion.header
-        initial="hidden"
-        animate="visible"
-        variants={fadeInUp}
-        className="max-w-3xl"
-      >
+      <SectionReveal as="header" animation="fadeDown" className="page-section-header">
         <span className="section-label">Technical Depth &amp; Architecture</span>
         <h1 className="text-h1 mt-2 mb-4" style={{ color: 'var(--text-primary)' }}>
           Enterprise Salesforce Solution Architecture
@@ -105,7 +200,7 @@ export default function ArchitectureView() {
           From business requirements down to CI/CD pipelines — an interactive breakdown of my
           technical execution and architecture patterns.
         </p>
-      </motion.header>
+      </SectionReveal>
 
       {/* ══════════════════════════════════════════
           6-LAYER ARCHITECTURE STACK
@@ -131,13 +226,13 @@ export default function ArchitectureView() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-3 lg:gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
 
-          {/* ── Left: layer list — no individual card borders, use spacing + active state ── */}
+          {/* ── Left: refined layer navigation ── */}
           <div
             role="tablist"
             aria-label="Architecture layers"
-            className="flex flex-col"
+            className="flex flex-col gap-0.5"
           >
             {layers.map((layer) => {
               const Icon = layer.icon;
@@ -150,28 +245,18 @@ export default function ArchitectureView() {
                   aria-selected={isActive}
                   aria-controls={getPanelId(layer.id)}
                   onClick={() => setActiveLayer(layer.id)}
-                  className="group w-full flex items-center gap-4 text-left transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 rounded-xl"
+                  className={`group w-full flex items-center gap-4 text-left transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 rounded-md ${isActive ? 'surface-row-active' : 'surface-row'}`}
                   style={{
-                    padding: '0.875rem 1rem',
+                    padding: '1rem 1.125rem',
                     outlineColor: 'var(--border-focus)',
-                    /* Active: subtle left accent bar via box-shadow trick */
-                    boxShadow: isActive ? 'inset 3px 0 0 var(--brand-primary)' : 'none',
-                    backgroundColor: isActive ? 'var(--brand-primary-tint)' : 'transparent',
-                    borderRadius: '0.5rem',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--interactive-default)';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
                   }}
                 >
-                  {/* Icon — coloured when active, muted when not */}
+                  {/* Icon — accent when active, quiet when not */}
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200"
+                    className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-colors duration-200"
                     style={{
-                      backgroundColor: isActive ? 'var(--brand-primary)' : 'var(--interactive-default)',
-                      color: isActive ? '#fff' : 'var(--text-tertiary)',
+                      backgroundColor: isActive ? 'var(--brand-primary)' : 'transparent',
+                      color: isActive ? '#fff' : 'var(--text-muted)',
                     }}
                   >
                     <Icon size={15} aria-hidden="true" />
@@ -222,11 +307,7 @@ export default function ArchitectureView() {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="rounded-xl"
-                        style={{
-                          backgroundColor: 'var(--bg-elevated)',
-                          padding: 'clamp(1.5rem, 3vw, 2.25rem)',
-                        }}
+                        className="surface-panel"
                       >
                         {/* Layer tag + heading */}
                         <p
@@ -236,13 +317,13 @@ export default function ArchitectureView() {
                             letterSpacing: '0.12em',
                             textTransform: 'uppercase',
                             color: 'var(--brand-primary)',
-                            marginBottom: '0.5rem',
+                            marginBottom: '0.625rem',
                           }}
                         >
                           {layer.tag} Overview
                         </p>
                         <h3
-                          className="text-h3 mb-5"
+                          className="text-h3 mb-6"
                           style={{ color: 'var(--text-primary)' }}
                         >
                           {layer.title}
@@ -250,13 +331,13 @@ export default function ArchitectureView() {
 
                         {/* Description */}
                         <p
-                          className="text-body leading-[1.82] mb-8"
+                          className="text-body leading-[1.88] mb-10"
                           style={{ color: 'var(--text-secondary)' }}
                         >
                           {layer.description}
                         </p>
 
-                        {/* Technologies — plain text with dot separators, no pills */}
+                        {/* Technologies — inline dot-separated */}
                         <div>
                           <p
                             style={{
@@ -265,35 +346,14 @@ export default function ArchitectureView() {
                               letterSpacing: '0.12em',
                               textTransform: 'uppercase',
                               color: 'var(--text-muted)',
-                              marginBottom: '0.875rem',
+                              marginBottom: '1rem',
                             }}
                           >
                             Key Technologies &amp; Patterns
                           </p>
-                          <div className="flex flex-wrap gap-x-1 gap-y-2">
-                            {layer.technologies.map((tech, idx) => (
-                              <span key={idx} className="flex items-center gap-1">
-                                <span
-                                  className="text-[13px] font-medium"
-                                  style={{ color: 'var(--text-primary)' }}
-                                >
-                                  {tech}
-                                </span>
-                                {idx < layer.technologies.length - 1 && (
-                                  <span
-                                    aria-hidden="true"
-                                    style={{
-                                      color: 'var(--text-muted)',
-                                      fontSize: '10px',
-                                      lineHeight: 1,
-                                    }}
-                                  >
-                                    ·
-                                  </span>
-                                )}
-                              </span>
-                            ))}
-                          </div>
+                          <p className="meta-inline text-[13px] leading-[2]">
+                            {layer.technologies.join('  ·  ')}
+                          </p>
                         </div>
                       </motion.div>
                     )}
@@ -307,7 +367,6 @@ export default function ArchitectureView() {
 
       {/* ══════════════════════════════════════════
           SPECIALIZATIONS DEEP-DIVE
-          Tab bar only. Content panel — no inner box.
       ══════════════════════════════════════════ */}
       <motion.section
         initial="hidden"
@@ -315,6 +374,7 @@ export default function ArchitectureView() {
         viewport={vp}
         variants={fadeInUp}
         aria-label="Development Specializations"
+        className="arch-spec-section"
       >
         <div className="section-heading-block">
           <span className="section-label" style={{ color: 'var(--brand-purple)' }}>
@@ -323,145 +383,66 @@ export default function ArchitectureView() {
           <h2 className="text-h2 mt-1" style={{ color: 'var(--text-primary)' }}>
             Salesforce Development Specializations
           </h2>
+          <p className="section-subtitle mt-2">
+            Explore each domain — capabilities, tooling, problems solved, and how I engineer solutions.
+          </p>
         </div>
 
-        {/* Tab bar — underline only, no container */}
-        <div
-          className="flex overflow-x-auto gap-0 pb-0 scrollbar-hide border-b mb-8"
-          role="tablist"
-          aria-label="Specialization areas"
-          style={{ borderColor: 'var(--border-subtle)' }}
-        >
-          {specializations.map((spec) => {
-            const isActive = activeSpecTab === spec.id;
-            return (
-              <button
-                key={spec.id}
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`spec-panel-${spec.id}`}
-                id={`spec-tab-${spec.id}`}
-                onClick={() => setActiveSpecTab(spec.id)}
-                className="px-4 py-3 text-[12px] font-semibold border-b-[1.5px] whitespace-nowrap shrink-0 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-1"
-                style={{
-                  color: isActive ? 'var(--text-primary)' : 'var(--text-tertiary)',
-                  borderBottomColor: isActive ? 'var(--brand-primary)' : 'transparent',
-                  outlineColor: 'var(--border-focus)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) (e.currentTarget as HTMLElement).style.color = 'var(--text-tertiary)';
-                }}
-              >
-                {spec.title}
-              </button>
-            );
-          })}
+        <div className="arch-spec-shell">
+          <div
+            className="arch-spec-tabs scrollbar-hide"
+            role="tablist"
+            aria-label="Specialization areas"
+          >
+            {specializations.map((spec) => {
+              const isActive = activeSpecTab === spec.id;
+              const accent = SPEC_META[spec.id]?.accent ?? 'var(--brand-primary)';
+              return (
+                <button
+                  key={spec.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`spec-panel-${spec.id}`}
+                  id={`spec-tab-${spec.id}`}
+                  onClick={() => setActiveSpecTab(spec.id)}
+                  className={`arch-spec-tab focus-visible:outline-2 focus-visible:outline-offset-1${isActive ? ' arch-spec-tab-active' : ''}`}
+                  style={{
+                    outlineColor: 'var(--border-focus)',
+                    ...(isActive ? { '--spec-accent': accent } : {}),
+                  } as React.CSSProperties}
+                >
+                  {spec.title}
+                  {isActive && (
+                    <motion.span
+                      layoutId="archSpecTabIndicator"
+                      className="arch-spec-tab-indicator"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="arch-spec-layout">
+            {specializations.map((spec) => {
+              const isActive = activeSpecTab === spec.id;
+              return (
+                <div
+                  key={spec.id}
+                  id={`spec-panel-${spec.id}`}
+                  role="tabpanel"
+                  aria-labelledby={`spec-tab-${spec.id}`}
+                  hidden={!isActive}
+                >
+                  <AnimatePresence mode="wait">
+                    {isActive && <SpecPanel key={spec.id} spec={spec} />}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
         </div>
-
-        {/* Spec panels — content lives on the page, no wrapper box */}
-        {specializations.map((spec) => {
-          const isActive = activeSpecTab === spec.id;
-          return (
-            <div
-              key={spec.id}
-              id={`spec-panel-${spec.id}`}
-              role="tabpanel"
-              aria-labelledby={`spec-tab-${spec.id}`}
-              hidden={!isActive}
-            >
-              <AnimatePresence mode="wait">
-                {isActive && currentSpec && (
-                  <motion.div
-                    key={spec.id}
-                    variants={panelVariant}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16"
-                  >
-                    {/* Left */}
-                    <div className="space-y-8">
-                      <div>
-                        <p
-                          className="mb-3"
-                          style={{
-                            fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em',
-                            textTransform: 'uppercase', color: 'var(--brand-primary)',
-                          }}
-                        >
-                          What I Work On
-                        </p>
-                        <p className="text-body leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                          {currentSpec.whatIWorkOn}
-                        </p>
-                      </div>
-                      <div>
-                        <p
-                          className="mb-4"
-                          style={{
-                            fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em',
-                            textTransform: 'uppercase', color: 'var(--brand-primary)',
-                          }}
-                        >
-                          Key Technologies &amp; Tools
-                        </p>
-                        {/* Plain inline text — no chips/borders */}
-                        <p className="text-body-sm leading-[1.9]" style={{ color: 'var(--text-primary)' }}>
-                          {currentSpec.technologies.join('  ·  ')}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Right */}
-                    <div className="space-y-8">
-                      <div>
-                        <p
-                          className="mb-4"
-                          style={{
-                            fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em',
-                            textTransform: 'uppercase', color: 'var(--brand-emerald)',
-                          }}
-                        >
-                          Typical Problems Solved
-                        </p>
-                        <ul className="space-y-3.5">
-                          {currentSpec.problemsSolved.map((prob, i) => (
-                            <li key={i} className="flex items-start gap-3 text-body-sm" style={{ color: 'var(--text-secondary)' }}>
-                              <CheckCircle
-                                size={14}
-                                className="shrink-0 mt-[3px]"
-                                style={{ color: 'var(--brand-emerald)' }}
-                                aria-hidden="true"
-                              />
-                              <span>{prob}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <p
-                          className="mb-3"
-                          style={{
-                            fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em',
-                            textTransform: 'uppercase', color: 'var(--brand-primary)',
-                          }}
-                        >
-                          Engineering Approach
-                        </p>
-                        <p className="text-body-sm leading-[1.8]" style={{ color: 'var(--text-secondary)' }}>
-                          {currentSpec.approach}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          );
-        })}
       </motion.section>
 
       {/* ══════════════════════════════════════════
@@ -486,9 +467,10 @@ export default function ArchitectureView() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        <div className="methodology-flow">
           {methodologySteps.map((step, i) => {
             const Icon = step.icon;
+            const isLast = i === methodologySteps.length - 1;
             return (
               <motion.div
                 key={step.id}
@@ -497,56 +479,20 @@ export default function ArchitectureView() {
                 viewport={vp}
                 variants={fadeInUp}
                 transition={{ delay: i * 0.065 }}
-                className="group relative overflow-hidden"
-                style={{
-                  padding: '1.75rem',
-                  borderRadius: '0.875rem',
-                  backgroundColor: 'var(--bg-surface)',
-                  boxShadow: 'var(--shadow-sm)',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-md)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.transform = '';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-sm)';
-                }}
+                className="methodology-step group"
               >
-                {/* Step number — large background watermark */}
-                <span
-                  className="absolute top-3 right-4 text-6xl font-black pointer-events-none select-none leading-none"
-                  style={{ color: 'var(--border-subtle)', opacity: 0.7 }}
-                  aria-hidden="true"
-                >
-                  {step.id}
-                </span>
-
-                {/* Icon — tinted, no box */}
-                <div
-                  className="mb-5 group-hover:scale-105 transition-transform duration-200"
-                  style={{ color: 'var(--brand-primary)', width: '32px' }}
-                >
-                  <Icon size={26} aria-hidden="true" />
+                <div className="methodology-step-rail" aria-hidden="true">
+                  <span className="methodology-step-number">{step.id}</span>
+                  {!isLast && <span className="methodology-step-connector" />}
                 </div>
 
-                <h3
-                  className="text-[15px] font-bold mb-3 uppercase tracking-wide"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  {step.title}
-                </h3>
-                <p className="text-body-sm leading-[1.75]" style={{ color: 'var(--text-secondary)' }}>
-                  {step.desc}
-                </p>
-
-                {/* Accent bar on hover */}
-                <div
-                  className="h-[2px] w-8 mt-5 group-hover:w-full transition-all duration-500 rounded-full"
-                  style={{ background: 'linear-gradient(to right, var(--brand-primary), transparent)' }}
-                  aria-hidden="true"
-                />
+                <div className="methodology-step-body">
+                  <div className="methodology-step-icon" style={{ color: 'var(--brand-primary)' }}>
+                    <Icon size={22} aria-hidden="true" />
+                  </div>
+                  <h3 className="methodology-step-title">{step.title}</h3>
+                  <p className="methodology-step-desc">{step.desc}</p>
+                </div>
               </motion.div>
             );
           })}
