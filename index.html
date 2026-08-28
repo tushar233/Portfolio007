@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Tushar | Lead Salesforce Developer & Solution Architect</title>
+    <meta name="title" content="Tushar | Lead Salesforce Developer & Solution Architect" />
+    <meta name="description" content="Lead Salesforce Developer with 7+ years of experience in Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, CPQ, Apex, LWC, integrations, and enterprise CRM architecture. View my portfolio, projects, and technical expertise." />
+    <meta name="keywords" content="Lead Salesforce Developer, Salesforce Developer, Salesforce Technical Lead, Apex Developer, LWC Developer, Salesforce Integration Developer, Sales Cloud Developer, Service Cloud Developer, Marketing Cloud Developer, Data Cloud, Salesforce CPQ, Salesforce Solution Architect, Salesforce Consultant" />
+    <meta name="author" content="Tushar" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Tushar | Lead Salesforce Developer & Solution Architect" />
+    <meta property="og:description" content="Lead Salesforce Developer with 7+ years of experience across Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, CPQ, Apex, LWC, and enterprise CRM architecture." />
+    <meta property="og:site_name" content="Tushar — Salesforce Portfolio" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tushar | Lead Salesforce Developer & Solution Architect" />
+    <meta name="twitter:description" content="Lead Salesforce Developer with 7+ years of experience across Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, CPQ, Apex, LWC, and enterprise CRM architecture." />
+
+    <!-- Theme Color — updated dynamically by ThemeContext -->
+    <meta name="theme-color" content="#0b0d18" />
+
+    <!-- Anti-flash: apply stored/OS theme before first paint -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('portfolio-theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.setAttribute('data-theme', stored);
+            document.querySelector('meta[name="theme-color"]')
+              ?.setAttribute('content', stored === 'light' ? '#f7f5f1' : '#080b14');
+            return;
+          }
+        } catch (_) {}
+        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.querySelector('meta[name="theme-color"]')
+            ?.setAttribute('content', '#f7f5f1');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "#person",
+          "name": "Tushar",
+          "jobTitle": "Lead Salesforce Developer",
+          "email": "devtushar211@gmail.com",
+          "telephone": "+919116312426",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "India"
+          },
+          "knowsAbout": [
+            "Salesforce Development",
+            "Apex Programming",
+            "Lightning Web Components",
+            "Sales Cloud",
+            "Service Cloud",
+            "Marketing Cloud",
+            "Data Cloud",
+            "Salesforce CPQ",
+            "Experience Cloud",
+            "REST API Integration",
+            "CRM Architecture",
+            "Enterprise Solutions"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "name": "Tushar — Salesforce Portfolio",
+          "description": "Professional portfolio of Tushar — Lead Salesforce Developer with 7+ years of enterprise CRM experience."
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
